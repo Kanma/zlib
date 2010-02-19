@@ -1,0 +1,4 @@
+This is a custom distribution of zlib, version 1.2.3, with a CMake-based build system.
+
+zlib's license is unchanged: this library is free software; you can redistribute
+it and/or modify it under the terms of the LICENSE file.
