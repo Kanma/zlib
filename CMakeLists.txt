@@ -12,6 +12,16 @@ if (NOT ATHENA_BINARY_DIR)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ZLIB_BINARY_DIR}/lib")
 endif()
 
+# XMake settings
+if (EXISTS "${ZLIB_SOURCE_DIR}/dependencies/xmake/XMake.cmake")
+    include("${ZLIB_SOURCE_DIR}/dependencies/xmake/XMake.cmake")
+endif()
+
+xmake_init_static(ZLIB)
+xmake_add_include_paths(ZLIB ${ZLIB_SOURCE_DIR})
+xmake_add_link_paths(ZLIB "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
+xmake_add_link_targets(ZLIB zlib)
+
 # List the source files
 set(SRCS adler32.c
          compress.c
