@@ -39,3 +39,7 @@ set(SRCS adler32.c
 
 # Declaration of the library
 add_library(zlib STATIC ${SRCS})
+
+if (NOT WIN32)
+    set_target_properties(zlib PROPERTIES COMPILE_FLAGS "-fPIC")
+endif()
