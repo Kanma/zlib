@@ -1,26 +1,44 @@
 cmake_minimum_required(VERSION 2.6)
 project(ZLIB)
 
-# Options
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+
+##########################################################################################
+# XMake-related settings
+
+# Set the output paths
+if (NOT DEFINED XMAKE_BINARY_DIR)
+    set(XMAKE_BINARY_DIR "${ZLIB_BINARY_DIR}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${XMAKE_BINARY_DIR}/bin")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${XMAKE_BINARY_DIR}/lib")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${XMAKE_BINARY_DIR}/bin")
 endif()
 
-# Set the output path
-if (NOT ATHENA_BINARY_DIR)
-    set(ATHENA_BINARY_DIR "${ZLIB_BINARY_DIR}")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ZLIB_BINARY_DIR}/lib")
+# Set the dependencies path
+if (NOT DEFINED XMAKE_DEPENDENCIES_DIR)
+    set(XMAKE_DEPENDENCIES_DIR "${ZLIB_SOURCE_DIR}/dependencies")
 endif()
 
-# XMake settings
-if (EXISTS "${ZLIB_SOURCE_DIR}/dependencies/xmake/XMake.cmake")
-    include("${ZLIB_SOURCE_DIR}/dependencies/xmake/XMake.cmake")
+
+##########################################################################################
+# XMake importation
+
+if (NOT EXISTS "${XMAKE_DEPENDENCIES_DIR}/XMake/XMake.cmake")
+    message(FATAL_ERROR
+"Missing dependency: XMake
+This distribution of ZLib requires XMake as a dependency.
+
+It is provided as GIT submodule of this repository.
+
+Did you forgot to execute the following commands?
+   git submodule init
+   git submodule update")
 endif()
 
-xmake_init_static(ZLIB)
-xmake_add_include_paths(ZLIB ${ZLIB_SOURCE_DIR})
-xmake_add_link_paths(ZLIB "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
-xmake_add_link_targets(ZLIB zlib)
+include("${XMAKE_DEPENDENCIES_DIR}/XMake/XMake.cmake")
+
+
+##########################################################################################
+# Declaration of the library
 
 # List the source files
 set(SRCS adler32.c
@@ -37,9 +55,13 @@ set(SRCS adler32.c
          zutil.c
 )
 
-# Declaration of the library
-add_library(zlib STATIC ${SRCS})
+# List the include paths
+set(INCLUDE_PATHS "${ZLIB_SOURCE_DIR}")
 
-if (NOT WIN32)
-    set_target_properties(zlib PROPERTIES COMPILE_FLAGS "-fPIC")
-endif()
+include_directories(${INCLUDE_PATHS})
+
+# Declaration of the library
+xmake_create_static_library(ZLIB zlib ${SRCS})
+
+# Exportations
+xmake_export_include_paths(ZLIB ${INCLUDE_PATHS})
