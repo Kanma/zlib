@@ -40,6 +40,19 @@ include("${XMAKE_DEPENDENCIES_DIR}/XMake/XMake.cmake")
 ##########################################################################################
 # Declaration of the library
 
+# List the header files
+set(HEADERS crc32.h
+            deflate.h
+            inffast.h
+            inffixed.h
+            inflate.h
+            inftrees.h
+            trees.h
+            zconf.h
+            zlib.h
+            zutil.h
+)
+
 # List the source files
 set(SRCS adler32.c
          compress.c
@@ -61,7 +74,7 @@ set(INCLUDE_PATHS "${ZLIB_SOURCE_DIR}")
 include_directories(${INCLUDE_PATHS})
 
 # Declaration of the library
-xmake_create_static_library(ZLIB zlib ${SRCS})
+xmake_create_static_library(ZLIB zlib ${HEADERS} ${SRCS})
 
 # Exportations
 xmake_export_include_paths(ZLIB ${INCLUDE_PATHS})
